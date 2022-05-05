@@ -38,6 +38,11 @@ parser.add_argument('gpu',metavar='GPU', type=str,
 parser.add_argument('task',metavar='TASK', type=str,
                     help='task id to use.')
 
+parser.add_argument('batch_size',metavar='BATCH_SIZE', type=int,
+                    help='batch size')
+parser.add_argument('worker_count',metavar='WORKER_COUNT', type=int,
+                    help='worker count')
+
 resultCSV = None
 resultPath = None
 
@@ -51,7 +56,7 @@ def main():
     args.original_lr = 1e-7
     args.lr = 1e-7
     # args.batch_size    = 1
-    args.batch_size    = 4
+    args.batch_size    = args.batch_size
     args.momentum      = 0.95
     args.decay         = 5*1e-4
     args.start_epoch   = 0
@@ -60,7 +65,7 @@ def main():
     args.steps         = [-1,1,100,150]
     args.scales        = [1,1,1,1]
     # args.workers = 4
-    args.workers = 1
+    args.workers = args.worker_count
     args.seed = time.time()
     args.print_freq = 30
     # with open(args.train_json, 'r') as outfile:        
