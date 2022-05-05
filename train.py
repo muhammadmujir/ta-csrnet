@@ -81,9 +81,12 @@ def main():
     torch.cuda.manual_seed(args.seed)
     
     model = CSRNet()
-    model = model.cuda()
-    
-    criterion = nn.MSELoss(size_average=False).cuda()
+    if args.gpu >= 0:
+        model = model.cuda()
+        criterion = nn.MSELoss(size_average=False).cuda()
+    else:
+        model = model.cpu()
+        criterion = nn.MSELoss(size_average=False).cpu()
     
     optimizer = torch.optim.SGD(model.parameters(), args.lr,
                                 momentum=args.momentum,
@@ -155,14 +158,17 @@ def train(train_list, model, criterion, optimizer, epoch):
     for i,(img, target)in enumerate(train_loader):
         data_time.update(time.time() - end)
         
-        img = img.cuda()
+        if args.gpu >= 0:
+            img = img.cuda()
+        else:
+            img = img.cpu()
         img = Variable(img)
         output = model(img)
         
-        
-        
-        
-        target = target.type(torch.FloatTensor).unsqueeze(0).cuda()
+        if args.gpu >= 0:
+            target = target.type(torch.FloatTensor).unsqueeze(0).cuda()
+        else:
+            target = target.type(torch.FloatTensor).unsqueeze(0).cpu()
         target = Variable(target)
         
         
@@ -205,11 +211,17 @@ def validate(val_list, model, criterion):
     mae = 0
     
     for i,(img, target) in enumerate(test_loader):
-        img = img.cuda()
+        if args.gpu >= 0:
+            img = img.cuda()
+        else:
+            img = img.cpu()
         img = Variable(img)
         output = model(img)
         
-        mae += abs(output.data.sum()-target.sum().type(torch.FloatTensor).cuda())
+        if args.gpu >= 0:
+            mae += abs(output.data.sum()-target.sum().type(torch.FloatTensor).cuda())
+        else:
+            mae += abs(output.data.sum()-target.sum().type(torch.FloatTensor).cpu())
         
     mae = mae/len(test_loader)    
     print(' * MAE {mae:.3f} '
