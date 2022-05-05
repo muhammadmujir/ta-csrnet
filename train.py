@@ -74,7 +74,6 @@ def main():
     torch.cuda.manual_seed(args.seed)
     
     model = CSRNet()
-    torch.cuda.empty_cache()
     model = model.cuda()
     
     criterion = nn.MSELoss(size_average=False).cuda()
@@ -148,7 +147,7 @@ def train(train_list, model, criterion, optimizer, epoch):
     
     for i,(img, target)in enumerate(train_loader):
         data_time.update(time.time() - end)
-        
+        torch.cuda.empty_cache()
         img = img.cuda()
         img = Variable(img)
         output = model(img)
