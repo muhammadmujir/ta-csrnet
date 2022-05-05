@@ -32,7 +32,7 @@ parser.add_argument('result_path', metavar='RESULT',
 parser.add_argument('--pre', '-p', metavar='PRETRAINED', default=None,type=str,
                     help='path to the pretrained model')
 
-parser.add_argument('gpu',metavar='GPU', type=str,
+parser.add_argument('gpu',metavar='GPU', type=int,
                     help='GPU id to use.')
 
 parser.add_argument('task',metavar='TASK', type=str,
