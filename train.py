@@ -59,7 +59,7 @@ def main():
     args.steps         = [-1,1,100,150]
     args.scales        = [1,1,1,1]
     # args.workers = 4
-    args.workers = 2
+    args.workers = 1
     args.seed = time.time()
     args.print_freq = 30
     # with open(args.train_json, 'r') as outfile:        
