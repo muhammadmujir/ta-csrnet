@@ -54,7 +54,8 @@ def main():
     args.momentum      = 0.95
     args.decay         = 5*1e-4
     args.start_epoch   = 0
-    args.epochs = 400
+    # args.epochs = 400
+    args.epochs = 1
     args.steps         = [-1,1,100,150]
     args.scales        = [1,1,1,1]
     args.workers = 4
@@ -97,8 +98,12 @@ def main():
             
     for epoch in range(args.start_epoch, args.epochs):
         
+        if (epoch == 0):
+            resultCSV = open(resultPath+'result.csv', 'w')
+        else:
+            resultCSV = open(resultPath+'result.csv', 'a')
+            
         adjust_learning_rate(optimizer, epoch)
-        
         train(train_list, model, criterion, optimizer, epoch)
         prec1 = validate(val_list, model, criterion)
         
@@ -121,10 +126,6 @@ def train(train_list, model, criterion, optimizer, epoch):
     losses = AverageMeter()
     batch_time = AverageMeter()
     data_time = AverageMeter()
-    if (epoch == 0):
-        resultCSV = open(resultPath+'result.csv', 'w')
-    else:
-        resultCSV = open(resultPath+'result.csv', 'a')
     
     resultCSV.write('%s;' % "EPOCH: "+str(epoch))
     
@@ -179,9 +180,10 @@ def train(train_list, model, criterion, optimizer, epoch):
                    data_time=data_time, loss=losses))
     
     resultCSV.write('%s;' % str(losses.avg).replace(".", ",",1))
-    resultCSV.write('\n')
     
 def validate(val_list, model, criterion):
+    global resultCSV
+    
     print ('begin test')
     test_loader = torch.utils.data.DataLoader(
     dataset.listDataset(val_list,
@@ -206,7 +208,9 @@ def validate(val_list, model, criterion):
     mae = mae/len(test_loader)    
     print(' * MAE {mae:.3f} '
               .format(mae=mae))
-
+    
+    resultCSV.write('%s;' % str(mae).replace(".", ",",1))
+    resultCSV.write('\n')
     return mae    
         
 def adjust_learning_rate(optimizer, epoch):
