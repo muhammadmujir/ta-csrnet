@@ -43,7 +43,7 @@ resultPath = None
 
 def main():
     
-    global args,best_prec1,resultPath
+    global args,best_prec1,resultPath,resultCSV
     
     best_prec1 = 1e6
     
@@ -73,7 +73,7 @@ def main():
     os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu
     torch.cuda.manual_seed(args.seed)
     
-    model = CSRNet(load_weights=True)
+    model = CSRNet()
     
     model = model.cuda()
     
