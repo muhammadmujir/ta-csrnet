@@ -11,13 +11,14 @@ import torch
 import torch.nn as nn
 from torch.autograd import Variable
 from torchvision import datasets, transforms
-
 import numpy as np
 import argparse
 import json
 import cv2
 import dataset
 import time
+import glob
+import os
 
 parser = argparse.ArgumentParser(description='PyTorch CSRNet')
 
@@ -25,6 +26,8 @@ parser.add_argument('train_json', metavar='TRAIN',
                     help='path to train json')
 parser.add_argument('test_json', metavar='TEST',
                     help='path to test json')
+parser.add_argument('result_path', metavar='RESULT',
+                    help='path to result')
 
 parser.add_argument('--pre', '-p', metavar='PRETRAINED', default=None,type=str,
                     help='path to the pretrained model')
@@ -35,9 +38,12 @@ parser.add_argument('gpu',metavar='GPU', type=str,
 parser.add_argument('task',metavar='TASK', type=str,
                     help='task id to use.')
 
+resultCSV = None
+resultPath = None
+
 def main():
     
-    global args,best_prec1
+    global args,best_prec1,resultPath
     
     best_prec1 = 1e6
     
@@ -54,10 +60,14 @@ def main():
     args.workers = 4
     args.seed = time.time()
     args.print_freq = 30
-    with open(args.train_json, 'r') as outfile:        
-        train_list = json.load(outfile)
-    with open(args.test_json, 'r') as outfile:       
-        val_list = json.load(outfile)
+    # with open(args.train_json, 'r') as outfile:        
+    #     train_list = json.load(outfile)
+    # with open(args.test_json, 'r') as outfile:       
+    #     val_list = json.load(outfile)
+    
+    train_list = glob.glob(os.path.join(args.train_json, '*.jpg'))
+    val_list = glob.glob(os.path.join(args.test_json, '*.jpg'))
+    resultPath = args.result_path
     
     os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu
     torch.cuda.manual_seed(args.seed)
@@ -106,10 +116,17 @@ def main():
 
 def train(train_list, model, criterion, optimizer, epoch):
     
+    global resultCSV, resultPath
+    
     losses = AverageMeter()
     batch_time = AverageMeter()
     data_time = AverageMeter()
+    if (epoch == 0):
+        resultCSV = open(resultPath+'result.csv', 'w')
+    else:
+        resultCSV = open(resultPath+'result.csv', 'a')
     
+    resultCSV.write('%s;' % "EPOCH: "+str(epoch))
     
     train_loader = torch.utils.data.DataLoader(
         dataset.listDataset(train_list,
@@ -160,6 +177,9 @@ def train(train_list, model, criterion, optimizer, epoch):
                   .format(
                    epoch, i, len(train_loader), batch_time=batch_time,
                    data_time=data_time, loss=losses))
+    
+    resultCSV.write('%s;' % str(losses.avg).replace(".", ",",1))
+    resultCSV.write('\n')
     
 def validate(val_list, model, criterion):
     print ('begin test')
