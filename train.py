@@ -58,7 +58,8 @@ def main():
     args.epochs = 1
     args.steps         = [-1,1,100,150]
     args.scales        = [1,1,1,1]
-    args.workers = 4
+    # args.workers = 4
+    args.workers = 2
     args.seed = time.time()
     args.print_freq = 30
     # with open(args.train_json, 'r') as outfile:        
@@ -147,7 +148,7 @@ def train(train_list, model, criterion, optimizer, epoch):
     
     for i,(img, target)in enumerate(train_loader):
         data_time.update(time.time() - end)
-        torch.cuda.empty_cache()
+        
         img = img.cuda()
         img = Variable(img)
         output = model(img)
