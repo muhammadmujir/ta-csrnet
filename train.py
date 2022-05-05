@@ -32,7 +32,7 @@ parser.add_argument('result_path', metavar='RESULT',
 parser.add_argument('--pre', '-p', metavar='PRETRAINED', default=None,type=str,
                     help='path to the pretrained model')
 
-parser.add_argument('gpu',metavar='GPU', type=int,
+parser.add_argument('gpu',metavar='GPU', type=str,
                     help='GPU id to use.')
 
 parser.add_argument('task',metavar='TASK', type=str,
@@ -81,7 +81,7 @@ def main():
     torch.cuda.manual_seed(args.seed)
     
     model = CSRNet()
-    if args.gpu >= 0:
+    if args.gpu != None:
         model = model.cuda()
         criterion = nn.MSELoss(size_average=False).cuda()
     else:
@@ -158,14 +158,14 @@ def train(train_list, model, criterion, optimizer, epoch):
     for i,(img, target)in enumerate(train_loader):
         data_time.update(time.time() - end)
         
-        if args.gpu >= 0:
+        if args.gpu != None:
             img = img.cuda()
         else:
             img = img.cpu()
         img = Variable(img)
         output = model(img)
         
-        if args.gpu >= 0:
+        if args.gpu != None:
             target = target.type(torch.FloatTensor).unsqueeze(0).cuda()
         else:
             target = target.type(torch.FloatTensor).unsqueeze(0).cpu()
@@ -211,14 +211,14 @@ def validate(val_list, model, criterion):
     mae = 0
     
     for i,(img, target) in enumerate(test_loader):
-        if args.gpu >= 0:
+        if args.gpu != None:
             img = img.cuda()
         else:
             img = img.cpu()
         img = Variable(img)
         output = model(img)
         
-        if args.gpu >= 0:
+        if args.gpu != None:
             mae += abs(output.data.sum()-target.sum().type(torch.FloatTensor).cuda())
         else:
             mae += abs(output.data.sum()-target.sum().type(torch.FloatTensor).cpu())
