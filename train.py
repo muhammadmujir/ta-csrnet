@@ -77,11 +77,10 @@ def main():
     val_list = glob.glob(os.path.join(args.test_json, '*.jpg'))
     resultPath = args.result_path
     
-    os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu
-    torch.cuda.manual_seed(args.seed)
-    
     model = CSRNet()
-    if args.gpu != None:
+    if args.gpu != 'None':
+        os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu
+        torch.cuda.manual_seed(args.seed)
         model = model.cuda()
         criterion = nn.MSELoss(size_average=False).cuda()
     else:
@@ -158,14 +157,14 @@ def train(train_list, model, criterion, optimizer, epoch):
     for i,(img, target)in enumerate(train_loader):
         data_time.update(time.time() - end)
         
-        if args.gpu != None:
+        if args.gpu != 'None':
             img = img.cuda()
         else:
             img = img.cpu()
         img = Variable(img)
         output = model(img)
         
-        if args.gpu != None:
+        if args.gpu != 'None':
             target = target.type(torch.FloatTensor).unsqueeze(0).cuda()
         else:
             target = target.type(torch.FloatTensor).unsqueeze(0).cpu()
@@ -211,14 +210,14 @@ def validate(val_list, model, criterion):
     mae = 0
     
     for i,(img, target) in enumerate(test_loader):
-        if args.gpu != None:
+        if args.gpu != 'None':
             img = img.cuda()
         else:
             img = img.cpu()
         img = Variable(img)
         output = model(img)
         
-        if args.gpu != None:
+        if args.gpu != 'None':
             mae += abs(output.data.sum()-target.sum().type(torch.FloatTensor).cuda())
         else:
             mae += abs(output.data.sum()-target.sum().type(torch.FloatTensor).cpu())
