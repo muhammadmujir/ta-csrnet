@@ -50,7 +50,8 @@ def main():
     args = parser.parse_args()
     args.original_lr = 1e-7
     args.lr = 1e-7
-    args.batch_size    = 1
+    # args.batch_size    = 1
+    args.batch_size    = 4
     args.momentum      = 0.95
     args.decay         = 5*1e-4
     args.start_epoch   = 0
