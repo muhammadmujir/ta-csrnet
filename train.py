@@ -74,7 +74,7 @@ def main():
     torch.cuda.manual_seed(args.seed)
     
     model = CSRNet()
-    
+    torch.cuda.empty_cache()
     model = model.cuda()
     
     criterion = nn.MSELoss(size_average=False).cuda()
