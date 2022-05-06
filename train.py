@@ -136,7 +136,7 @@ def train(train_list, model, criterion, optimizer, epoch):
     data_time = AverageMeter()
     
     print(str(epoch))
-    resultCSV.write('%s;' % "EPOCH: " + str(epoch))
+    resultCSV.write('%s;' % "Epoch: {}".format(epoch))
     
     train_loader = torch.utils.data.DataLoader(
         dataset.listDataset(train_list,
