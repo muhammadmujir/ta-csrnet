@@ -226,7 +226,7 @@ def validate(val_list, model, criterion):
     print(' * MAE {mae:.3f} '
               .format(mae=mae))
     
-    resultCSV.write('%s;' % str(mae).replace(".", ",",1))
+    resultCSV.write('%s;' % str(mae.item()).replace(".", ",",1))
     resultCSV.write('\n')
     return mae    
         
